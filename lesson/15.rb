@@ -26,18 +26,18 @@ def check_block(height, block, predrop_array)
     # フィールドの高さの分だけすでにブロックがないか確認
     # 空いている高さの数値を返す
     height.times do |i|
-        # 横幅１のブロックに対応
-        next if predrop_array[i][block[2]].include?("#")
-        # 横幅１以上のブロックに対応
-        next if predrop_array[i][block[2]..block[1]].include?("#")
-        return i
+        # p predrop_array[height - i - 1][block[2]..block[1]+(block[2]-1)].include?("#")
+        return height - i if i == height - 1 && predrop_array[height - i - 1][block[2]..block[1]+(block[2]-1)].include?("#")
+        return height - i - 1 if i == height - 1
+        next unless predrop_array[height - i - 1][block[2]..block[1]+(block[2]-1)].include?("#")
+        return height - i
     end
 end
 
 # "."を"#"に変更するメソッド
 def change_block(block, predrop_array, block_height)
-    p block
-    p block_height
+    # p block
+    # p block_height
     # ブロックの高さ分だけ"."を"#"に変える
     block[0].times do |i|
         # 横幅1の場合
@@ -45,7 +45,7 @@ def change_block(block, predrop_array, block_height)
             predrop_array[i+block_height][block[2]] = "#"
         # 横幅２以上の場合
         elsif
-            predrop_array[i+block_height][block[2]..block[1]] = ["#"]*block[1]
+            predrop_array[i+block_height][block[2]..block[1]+(block[2]-1)] = ["#"]*block[1]
         end
     end
     predrop_array
@@ -54,11 +54,7 @@ end
 block_array.each do |block|
     block_height = check_block(height, block, predrop_array)
     change_block(block, predrop_array, block_height)
-    predrop_array.each do |a|
-        if a.length > width
-            a.reverse.shift(a.length).reverse
-        end
-    end
+    # puts predrop_array.reverse.map{|a|a.join("")}
 end
 
 puts predrop_array.reverse.map{|a|a.join("")}
